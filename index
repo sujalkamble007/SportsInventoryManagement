@@ -1,0 +1,137 @@
+import java.util.*;
+
+// Enum to represent customer levels
+enum CustomerLevel {
+    BEGINNER,
+    INTERMEDIATE,
+    EXPERT
+}
+
+// Class to represent a sports item
+class SportsItem {
+    private String itemName;
+    private int quantity;
+    private double price;
+
+    public SportsItem(String name, int qty, double price) {
+        itemName = name;
+        quantity = qty;
+        this.price = price;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int qty) {
+        quantity = qty;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    @Override
+    public String toString() {
+        return "Item: " + itemName + ", Quantity: " + quantity + ", Price: RS" + price;
+    }
+}
+
+// Class to manage sports inventory
+class InventoryManager {
+    private List<SportsItem> inventory;
+
+    public InventoryManager() {
+        inventory = new ArrayList<>();
+    }
+
+    public List<SportsItem> getInventory() {
+        return inventory;
+    }
+
+    public void addItem(String name, int qty, double price) {
+        SportsItem newItem = new SportsItem(name, qty, price);
+        inventory.add(newItem);
+    }
+
+    public void removeItem(String name) {
+        Iterator<SportsItem> iterator = inventory.iterator();
+        while (iterator.hasNext()) {
+            SportsItem item = iterator.next();
+            if (item.getItemName().equals(name)) {
+                iterator.remove();
+                break;
+            }
+        }
+    }
+
+    public void displayInventory() {
+        System.out.println("Current Inventory:");
+        for (SportsItem item : inventory) {
+            System.out.println(item);
+        }
+    }
+
+    public double calculateDiscountedPrice(SportsItem item, CustomerLevel level) {
+        double discountRate = 0.0;
+        switch (level) {
+            case BEGINNER:
+                discountRate = 0.1; // 10% discount for beginners
+                break;
+            case INTERMEDIATE:
+                discountRate = 0.15; // 15% discount for intermediates
+                break;
+            case EXPERT:
+                discountRate = 0.2; // 20% discount for experts
+                break;
+        }
+        return item.getPrice() * (1 - discountRate);
+    }
+}
+
+// Main class to test the inventory management system
+public class SportsInventoryManagement {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        InventoryManager manager = new InventoryManager();
+
+        // Adding items to inventory
+        manager.addItem("Football", 10, 250.0); // Price in INR
+        manager.addItem("Basketball", 15, 300.0);
+        manager.addItem("Tennis Racket", 5, 500.0);
+
+        // Displaying initial inventory
+        manager.displayInventory();
+
+        // User input for customer level
+        System.out.println("\nEnter customer level (BEGINNER, INTERMEDIATE, EXPERT):");
+        String levelInput = scanner.nextLine().toUpperCase();
+        CustomerLevel level = CustomerLevel.valueOf(levelInput);
+
+        // User input for item to calculate discounted price
+        System.out.println("\nEnter item name for discounted price calculation:");
+        String itemName = scanner.nextLine();
+
+        List<SportsItem> inventory = manager.getInventory();
+        SportsItem item = null;
+        for (SportsItem inventoryItem : inventory) {
+            if (inventoryItem.getItemName().equalsIgnoreCase(itemName)) {
+                item = inventoryItem;
+                break;
+            }
+        }
+
+        if (item != null) {
+            double discountedPrice = manager.calculateDiscountedPrice(item, level);
+            System.out.println("\nDiscounted Price for " + item.getItemName() + ": RS" + discountedPrice);
+        } else {
+            System.out.println("\nItem not found in inventory!");
+        }
+
+        scanner.close();
+    }
+}
